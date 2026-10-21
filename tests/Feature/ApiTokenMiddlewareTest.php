@@ -18,26 +18,26 @@ final class ApiTokenMiddlewareTest extends TestCase
         Route::middleware('api.token')->post('/api/_protected', fn () => response()->json(['ok' => true]));
     }
 
-    public function testRejectsRequestWithoutToken(): void
+    public function test_rejects_request_without_token(): void
     {
         $this->postJson('/api/_protected')
             ->assertUnauthorized()
             ->assertHeader('WWW-Authenticate', 'Bearer');
     }
 
-    public function testRejectsRequestWithInvalidToken(): void
+    public function test_rejects_request_with_invalid_token(): void
     {
         $this->postJson('/api/_protected', [], ['Authorization' => 'Bearer nope'])
             ->assertUnauthorized();
     }
 
-    public function testAcceptsRequestWithValidToken(): void
+    public function test_accepts_request_with_valid_token(): void
     {
         $this->postJson('/api/_protected', [], ['Authorization' => 'Bearer secret-token'])
             ->assertOk();
     }
 
-    public function testRejectsEverythingWhenNoTokenIsConfigured(): void
+    public function test_rejects_everything_when_no_token_is_configured(): void
     {
         config(['services.api.token' => null]);
 

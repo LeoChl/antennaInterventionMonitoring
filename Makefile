@@ -15,12 +15,6 @@ restart:
 build:
 	$(COMPOSE) build
 
-ps:
-	$(COMPOSE) ps
-
-logs:
-	$(COMPOSE) logs -f
-
 shell:
 	$(COMPOSE) exec -u app php sh
 

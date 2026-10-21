@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Dedoc\Scramble\SecurityDocumentation\MiddlewareAuthSecurityStrategy;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
 
