@@ -1,0 +1,101 @@
+name: antenna
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: development
+      args:
+        APP_UID: ${APP_UID:-1000}
+        APP_GID: ${APP_GID:-1000}
+        XDEBUG_MODE: ${XDEBUG_MODE:-develop,coverage,debug,profile}
+        XDEBUG_HOST: ${XDEBUG_HOST:-host.docker.internal}
+        XDEBUG_IDE_KEY: ${XDEBUG_IDE_KEY:-DOCKER}
+        XDEBUG_START: ${XDEBUG_START:-yes}
+        XDEBUG_LOG_LEVEL: ${XDEBUG_LOG_LEVEL:-0}
+    environment:
+      XDEBUG_MODE: ${XDEBUG_MODE:-develop,coverage,debug,profile}
+      PHP_IDE_CONFIG: serverName=antenna
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - .:/var/www/html
+      - composer-cache:/home/app/.composer/cache
+    networks:
+      - antenna-monitoring
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "php -r 'exit(@fsockopen(\"127.0.0.1\", 9000) ? 0 : 1);'"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 120s
+
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    volumes:
+      - .:/var/www/html:ro
+    networks:
+      - antenna-monitoring
+    depends_on:
+      php:
+        condition: service_healthy
+      node:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/up || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-antenna}
+      POSTGRES_USER: ${DB_USERNAME:-antenna}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - antenna-monitoring
+
+  node:
+    build:
+      context: .
+      dockerfile: docker/node/Dockerfile
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    volumes:
+      - .:/app
+    networks:
+      - antenna-monitoring
+
+  vite:
+    profiles: ["dev"]
+    build:
+      context: .
+      dockerfile: docker/node/Dockerfile
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    command: ["sh", "-c", "pnpm install --ignore-scripts && pnpm run dev"]
+    ports:
+      - "${VITE_PORT:-5173}:5173"
+    volumes:
+      - .:/app
+    networks:
+      - antenna-monitoring
+
+networks:
+  antenna-monitoring:
+    name: antenna-monitoring
+
+volumes:
+  pgdata:
+  composer-cache:
