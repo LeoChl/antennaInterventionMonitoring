@@ -8,6 +8,7 @@ use App\Application\Antenna\ListAntennas\ListAntennasHandler;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ListAntennasRequest;
 use App\Http\Resources\AntennaResource;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 final class AntennaController extends Controller
 {
@@ -20,8 +21,16 @@ final class AntennaController extends Controller
     public function __invoke(ListAntennasRequest $request)
     {
         $queryParams = $request->toQuery();
-        $antennas = $this->listAntennasHandler->__invoke($queryParams);
+        $result = $this->listAntennasHandler->__invoke($queryParams);
 
-        return AntennaResource::collection($antennas);
+        $paginator = (new LengthAwarePaginator(
+            $result->items,
+            $result->total,
+            $result->perPage,
+            $result->page,
+            ['path' => $request->url()],
+        ))->withQueryString();
+
+        return AntennaResource::collection($paginator);
     }
 }

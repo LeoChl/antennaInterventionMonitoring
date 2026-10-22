@@ -9,10 +9,11 @@ use App\Domain\Antenna\AntennaRepository;
 use App\Domain\Antenna\AntennaStatus;
 use App\Domain\Intervention\Intervention;
 use App\Domain\Intervention\InterventionPriority;
+use App\Domain\Shared\PaginatedResult;
 
 final class EloquentAntennaRepository implements AntennaRepository
 {
-    public function findPaginated(int $page, int $perPage, ?string $city = null, ?AntennaStatus $status = AntennaStatus::UP): array
+    public function findPaginated(int $page, int $perPage, ?string $city = null, ?AntennaStatus $status = AntennaStatus::UP): PaginatedResult
     {
         $whereCondition = ['status' => $status?->value ?? AntennaStatus::UP->value];
 
@@ -32,7 +33,9 @@ final class EloquentAntennaRepository implements AntennaRepository
             ))
             ->all();
 
-        return $consolidatedAntennas;
+        $paginatedResult = new PaginatedResult($consolidatedAntennas, $rawAntennas->total(), $page, $perPage);
+
+        return $paginatedResult;
     }
 
     private function toIntervention(InterventionModel $model): Intervention

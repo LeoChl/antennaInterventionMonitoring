@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Application\Antenna\ListAntennas\ListAntennasQuery;
+use App\Domain\Antenna\AntennaStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class ListAntennasRequest extends FormRequest
 {
@@ -19,7 +21,7 @@ final class ListAntennasRequest extends FormRequest
             'page' => 'sometimes|integer|min:1',
             'per_page' => 'sometimes|integer|min:1|max:100',
             'city' => 'sometimes|string',
-            'status' => 'sometimes|string|in:up,down',
+            'status' => ['sometimes', Rule::enum(AntennaStatus::class)],
         ];
     }
 
@@ -28,7 +30,7 @@ final class ListAntennasRequest extends FormRequest
         $pageInput = $this->input('page', self::DEFAULT_PAGE);
         $perPageInput = $this->input('per_page', self::DEFAULT_PER_PAGE);
         $city = $this->input('city');
-        $status = $this->input('status');
+        $status = $this->enum('status', AntennaStatus::class);
 
         return new ListAntennasQuery((int) $pageInput, (int) $perPageInput, $city, $status);
     }

@@ -34,14 +34,14 @@ final class ApiTokenMiddlewareTest extends TestCase
             ->assertUnauthorized();
     }
 
-    #[TestDox('Given a valid token is provided, when an endpoint is called, then the request is accepted')]
+    #[TestDox('Given a valid token is provided, when protected endpoint is called, then the request is accepted')]
     public function test_accepts_request_with_valid_token(): void
     {
         $this->postJson('/api/_protected', [], ['Authorization' => 'Bearer secret-token'])
             ->assertOk();
     }
 
-    #[TestDox('Given no token configured, when an endpoint is called, then the request is rejected')]
+    #[TestDox('Given no token configured, when a protected endpoint is called, then the request is rejected')]
     public function test_rejects_everything_when_no_token_is_configured(): void
     {
         config(['services.api.token' => null]);
