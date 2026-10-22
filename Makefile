@@ -35,7 +35,7 @@ test-db:
 		|| $(COMPOSE) exec -T postgres createdb -U antenna antenna_monitoring
 
 test: test-db
-	$(COMPOSE) exec -u app php php artisan test
+	$(COMPOSE) exec -u app php vendor/bin/phpunit --testdox
 
 coverage: test-db
 	$(COMPOSE) exec -u app -e XDEBUG_MODE=coverage php php artisan test --coverage
