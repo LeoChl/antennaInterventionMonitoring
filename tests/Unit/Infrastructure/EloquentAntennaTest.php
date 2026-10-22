@@ -30,13 +30,24 @@ class EloquentAntennaTest extends TestsTestCase
         $this->repository = app(EloquentAntennaRepository::class);
     }
 
-    #[TestDox('Given no filters are passed, when finding antennas, then it returns the antenna with UP status')]
-    public function test_finds_up_antenna(): void
+    #[TestDox('Given no filters are passed, when finding antennas, then it returns antennas of every status')]
+    public function test_finds_antennas_of_any_status_by_default(): void
     {
         AntennaModel::create(['name' => 'A1', 'city' => 'Paris', 'status' => 'UP']);
         AntennaModel::create(['name' => 'A2', 'city' => 'Paris', 'status' => 'DOWN']);
 
         $antennas = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE)->items;
+
+        $this->assertSame(['A1', 'A2'], array_map(fn (Antenna $antenna) => $antenna->name, $antennas));
+    }
+
+    #[TestDox('Given UP status filter is passed, when finding antennas, then it returns the antenna with UP status')]
+    public function test_finds_up_antenna(): void
+    {
+        AntennaModel::create(['name' => 'A1', 'city' => 'Paris', 'status' => 'UP']);
+        AntennaModel::create(['name' => 'A2', 'city' => 'Paris', 'status' => 'DOWN']);
+
+        $antennas = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, null, AntennaStatus::UP)->items;
 
         $this->assertCount(1, $antennas);
         [$antenna] = $antennas;
@@ -68,7 +79,7 @@ class EloquentAntennaTest extends TestsTestCase
         $this->assertSame(AntennaStatus::DOWN, $antenna->status);
     }
 
-    #[TestDox('Given filter with city and default status (UP), when finding antennas, then it returns the up antenna with that city')]
+    #[TestDox('Given filter with city and UP status, when finding antennas, then it returns the up antenna with that city')]
     public function test_finds_antenna_by_city(): void
     {
         AntennaModel::create(['name' => 'A1', 'city' => 'Montpellier', 'status' => 'UP']);
@@ -76,7 +87,7 @@ class EloquentAntennaTest extends TestsTestCase
         AntennaModel::create(['name' => 'A3', 'city' => 'Paris', 'status' => 'UP']);
         AntennaModel::create(['name' => 'A4', 'city' => 'Paris', 'status' => 'DOWN']);
 
-        $antennas = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, 'Paris')->items;
+        $antennas = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, 'Paris', AntennaStatus::UP)->items;
 
         $this->assertCount(1, $antennas);
 
@@ -84,6 +95,18 @@ class EloquentAntennaTest extends TestsTestCase
 
         $this->assertSame('A3', $antenna->name);
         $this->assertSame(AntennaStatus::UP, $antenna->status);
+    }
+
+    #[TestDox('Given filter with city only, when finding antennas, then it returns antennas of every status in that city')]
+    public function test_finds_antennas_by_city_whatever_the_status(): void
+    {
+        AntennaModel::create(['name' => 'A1', 'city' => 'Montpellier', 'status' => 'UP']);
+        AntennaModel::create(['name' => 'A2', 'city' => 'Paris', 'status' => 'UP']);
+        AntennaModel::create(['name' => 'A3', 'city' => 'Paris', 'status' => 'DOWN']);
+
+        $antennas = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, 'Paris')->items;
+
+        $this->assertSame(['A2', 'A3'], array_map(fn (Antenna $antenna) => $antenna->name, $antennas));
     }
 
     #[TestDox('Given filter with city and down status, when finding antennas, then it returns the down antenna with that city')]

@@ -12,7 +12,7 @@ final class ListAntennasQuery
         public readonly int $page,
         public readonly int $perPage,
         public readonly ?string $city = null,
-        public readonly ?AntennaStatus $status = AntennaStatus::UP,
+        public readonly ?AntennaStatus $status = null,
     ) {}
 
     public function toArray(): array

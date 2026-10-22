@@ -13,9 +13,13 @@ use App\Domain\Shared\PaginatedResult;
 
 final class EloquentAntennaRepository implements AntennaRepository
 {
-    public function findPaginated(int $page, int $perPage, ?string $city = null, ?AntennaStatus $status = AntennaStatus::UP): PaginatedResult
+    public function findPaginated(int $page, int $perPage, ?string $city = null, ?AntennaStatus $status = null): PaginatedResult
     {
-        $whereCondition = ['status' => $status?->value ?? AntennaStatus::UP->value];
+        $whereCondition = [];
+
+        if ($status) {
+            $whereCondition['status'] = $status->value;
+        }
 
         if ($city) {
             $whereCondition['city'] = $city;

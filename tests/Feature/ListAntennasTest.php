@@ -60,13 +60,25 @@ final class ListAntennasTest extends TestCase
             ->assertJsonPath('data.0.latestIntervention.isInterventionOngoing', true);
     }
 
-    #[TestDox('Given UP and DOWN antennas, when no status is given, then only UP antennas are returned')]
-    public function test_defaults_to_up_antennas(): void
+    #[TestDox('Given UP and DOWN antennas, when no status is given, then antennas of every status are returned')]
+    public function test_returns_every_status_by_default(): void
     {
         $this->createAntenna('A1', 'Paris', 'UP');
         $this->createAntenna('A2', 'Paris', 'DOWN');
 
         $this->authenticatedGet(self::URL)
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.name', 'A1')
+            ->assertJsonPath('data.1.name', 'A2');
+    }
+
+    #[TestDox('Given UP and DOWN antennas, when status=UP is given, then only UP antennas are returned')]
+    public function test_filters_by_up_status(): void
+    {
+        $this->createAntenna('A1', 'Paris', 'UP');
+        $this->createAntenna('A2', 'Paris', 'DOWN');
+
+        $this->authenticatedGet(self::URL.'?status=UP')
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.name', 'A1');
     }
