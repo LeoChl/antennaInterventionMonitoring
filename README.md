@@ -47,6 +47,22 @@ On first start the containers will install Composer dependencies, create `.env` 
 - API: http://localhost:8080/api
 - OpenAPI UI: http://localhost:8080/docs/api
 
+### migrations
+
+To create the tables using migrations, run:
+
+```bash
+make migrate
+```
+
+### Seeding
+
+To seed the database with mock data, run:
+
+```bash
+make seed
+```
+
 ## Authentication
 
 Write routes use `Route::middleware('api.token')`.

@@ -18,7 +18,7 @@ final class EloquentAntennaRepository implements AntennaRepository
         $models = $this->model->paginate($perPage, ['*'], 'page', $page);
 
         return array_map(
-            fn (AntennaModel $m) => Antenna::fromArray($m->toArray()),
+            fn (AntennaModel $antenna) => Antenna::fromArray($antenna->toArray()),
             $models->items()
         );
     }

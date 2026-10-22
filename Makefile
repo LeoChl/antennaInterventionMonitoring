@@ -1,7 +1,7 @@
 COMPOSE := docker compose
 ARTISAN := $(COMPOSE) exec -u app php php artisan
 
-.PHONY: coverage up down restart build ps logs shell composer migrate fresh test test-db lint watch dev
+.PHONY: coverage up down restart build ps logs sh composer migrate fresh seed test test-db lint watch dev
 
 up:
 	$(COMPOSE) up -d --build
@@ -15,17 +15,20 @@ restart:
 build:
 	$(COMPOSE) build
 
-shell:
+sh:
 	$(COMPOSE) exec -u app php sh
 
 composer:
 	$(COMPOSE) exec -u app php composer $(ARGS)
 
 migrate:
-	$(ARTISAN) migrate
+	$(ARTISAN) migrate $(ARGS)
 
 fresh:
 	$(ARTISAN) migrate:fresh
+
+seed:
+	$(ARTISAN) db:seed $(ARGS)
 
 test-db:
 	@$(COMPOSE) exec -T postgres psql -U antenna -d antenna -tAc "SELECT 1 FROM pg_database WHERE datname='antenna_monitoring'" | grep -q 1 \

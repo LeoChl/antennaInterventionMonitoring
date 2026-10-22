@@ -7,7 +7,7 @@ namespace App\Domain\Antenna;
 final class Antenna
 {
     public function __construct(
-        public readonly string $id,
+        public readonly int $id,
         public readonly string $name,
         public readonly string $city,
         public readonly AntennaStatus $status,
@@ -25,7 +25,7 @@ final class Antenna
         ];
     }
 
-    public function fromArray(array $data): self
+    public static function fromArray(array $data): self
     {
         return new self(
             $data['id'],
