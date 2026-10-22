@@ -19,7 +19,8 @@ final class AntennaController extends Controller
 
     public function __invoke(ListAntennasRequest $request)
     {
-        $antennas = $this->listAntennasHandler->__invoke($request->toQuery());
+        $queryParams = $request->toQuery();
+        $antennas = $this->listAntennasHandler->__invoke($queryParams);
 
         return AntennaResource::collection($antennas);
     }

@@ -20,7 +20,7 @@ class AntennaResource extends JsonResource
             'name' => $this->name,
             'city' => $this->city,
             'status' => $this->status->value,
-            'created_at' => $this->createdAt->format(DATE_ATOM),
+            'latestIntervention' => $this->latestIntervention?->toArray(),
         ];
     }
 }

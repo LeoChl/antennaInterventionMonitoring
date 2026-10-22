@@ -18,14 +18,18 @@ final class ListAntennasRequest extends FormRequest
         return [
             'page' => 'sometimes|integer|min:1',
             'per_page' => 'sometimes|integer|min:1|max:100',
+            'city' => 'sometimes|string',
+            'status' => 'sometimes|string|in:up,down',
         ];
     }
 
     public function toQuery(): ListAntennasQuery
     {
-        $pageInput = $this->get('page', self::DEFAULT_PAGE);
-        $perPageInput = $this->get('per_page', self::DEFAULT_PER_PAGE);
+        $pageInput = $this->input('page', self::DEFAULT_PAGE);
+        $perPageInput = $this->input('per_page', self::DEFAULT_PER_PAGE);
+        $city = $this->input('city');
+        $status = $this->input('status');
 
-        return new ListAntennasQuery((int) $pageInput, (int) $perPageInput);
+        return new ListAntennasQuery((int) $pageInput, (int) $perPageInput, $city, $status);
     }
 }

@@ -6,5 +6,5 @@ namespace App\Domain\Antenna;
 
 interface AntennaRepository
 {
-    public function findPaginated(int $page, int $perPage): array;
+    public function findPaginated(int $page, int $perPage, ?string $city = null, ?AntennaStatus $status = null): array;
 }

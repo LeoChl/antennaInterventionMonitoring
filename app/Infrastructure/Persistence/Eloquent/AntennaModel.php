@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence\Eloquent;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
-final class AntennaModel extends Model
+class AntennaModel extends Model
 {
     public $timestamps = false;
 
@@ -23,4 +24,9 @@ final class AntennaModel extends Model
         'status' => 'string',
         'created_at' => 'datetime',
     ];
+
+    public function latestIntervention(): HasOne
+    {
+        return $this->hasOne(InterventionModel::class, 'antenna_id')->latestOfMany('created_at');
+    }
 }
