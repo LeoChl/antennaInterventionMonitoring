@@ -9,6 +9,10 @@ use Illuminate\Foundation\Http\FormRequest;
 
 final class ListAntennasRequest extends FormRequest
 {
+    private const DEFAULT_PAGE = 1;
+
+    private const DEFAULT_PER_PAGE = 20;
+
     public function rules(): array
     {
         return [
@@ -19,6 +23,9 @@ final class ListAntennasRequest extends FormRequest
 
     public function toQuery(): ListAntennasQuery
     {
-        return new ListAntennasQuery((int) $this->input('page', 1), (int) $this->input('per_page', 20));
+        $pageInput = $this->get('page', self::DEFAULT_PAGE);
+        $perPageInput = $this->get('per_page', self::DEFAULT_PER_PAGE);
+
+        return new ListAntennasQuery((int) $pageInput, (int) $perPageInput);
     }
 }

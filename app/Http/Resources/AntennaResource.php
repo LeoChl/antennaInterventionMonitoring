@@ -8,19 +8,19 @@ use App\Domain\Antenna\Antenna;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-final class AntennaResource extends JsonResource
+/**
+ * @mixin Antenna
+ */
+class AntennaResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        /** @var Antenna $antenna */
-        $antenna = $this->resource;
-
         return [
-            'id' => $antenna->id,
-            'name' => $antenna->name,
-            'city' => $antenna->city,
-            'status' => $antenna->status->value,
-            'created_at' => $antenna->createdAt->format(DATE_ATOM),
+            'id' => $this->id,
+            'name' => $this->name,
+            'city' => $this->city,
+            'status' => $this->status->value,
+            'created_at' => $this->createdAt->format(DATE_ATOM),
         ];
     }
 }
