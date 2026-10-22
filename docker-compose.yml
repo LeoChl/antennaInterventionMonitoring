@@ -64,7 +64,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME:-antenna}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgresdata:/var/lib/postgresql/data
     networks:
       - antenna-monitoring
     healthcheck:
@@ -103,5 +103,5 @@ networks:
     name: antenna-monitoring
 
 volumes:
-  pgdata:
+  postgresdata:
   composer-cache:
