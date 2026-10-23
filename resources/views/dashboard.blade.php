@@ -6,11 +6,14 @@
     <title>{{ config('app.name') }}</title>
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 </head>
-<body class="bg-light">
-<main id="dashboard-antenna" class="dashboard container py-4">
-    <header class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="dashboard__title h3 mb-0">{{ config('app.name') }}</h1>
+<body class="dashboard-page">
+<main id="dashboard-antenna" class="dashboard">
+    <header class="dashboard__header">
+        <h1 class="dashboard__title">{{ config('app.name') }}</h1>
     </header>
+    @include('dashboard._antenna-table')
+    @include('dashboard._modal-create')
+    @include('dashboard._modal-close')
 </main>
 </body>
 </html>

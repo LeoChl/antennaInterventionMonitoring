@@ -1,8 +1,61 @@
-#dashboard-antenna {
-    .dashboard {
-        &__title {
-            color: blue;
-        }
+@use 'bootstrap/scss/bootstrap' as bs;
+
+.dashboard {
+    @extend .container;
+    padding-block: 1.5rem;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    &__title {
+        @extend .h3;
+        margin-bottom: 0;
+    }
+
+    &__search {
+        display: grid;
+        grid-template-columns: 2fr 1fr auto;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    &__label {
+        @extend .form-label;
+        margin-bottom: 0;
+    }
+
+    &__table {
+        @extend .table;
+        @extend .table-striped;
+        vertical-align: middle;
+        background-color: #fff;
+    }
+
+    &__pagination {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    &__dialog {
+        padding: 0;
+        border: 0;
+    }
+
+    &__form {
+        display: grid;
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
     }
 }
-    
