@@ -14,14 +14,4 @@ final class ListAntennasQuery
         public readonly ?string $city = null,
         public readonly ?AntennaStatus $status = null,
     ) {}
-
-    public function toArray(): array
-    {
-        return [
-            'page' => $this->page,
-            'per_page' => $this->perPage,
-            'city' => $this->city,
-            'status' => $this->status?->value,
-        ];
-    }
 }

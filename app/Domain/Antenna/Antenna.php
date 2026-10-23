@@ -21,33 +21,4 @@ final class Antenna
     {
         return $this->latestIntervention?->isInterventionOngoing() ?? false;
     }
-
-    public function withStatus(AntennaStatus $status): self
-    {
-        return new self($this->id, $this->name, $this->city, $status, $this->createdAt, $this->latestIntervention);
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'city' => $this->city,
-            'status' => $this->status->value,
-            'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
-            'latestIntervention' => $this->latestIntervention?->toArray(),
-        ];
-    }
-
-    public static function fromArray(array $data, ?Intervention $latestIntervention = null): self
-    {
-        return new self(
-            $data['id'],
-            $data['name'],
-            $data['city'],
-            AntennaStatus::from($data['status']),
-            new \DateTimeImmutable($data['created_at']),
-            $latestIntervention,
-        );
-    }
 }

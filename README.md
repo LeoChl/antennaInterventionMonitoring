@@ -29,7 +29,6 @@ To guarantee atomicity, multiple verification steps are made at different layers
 - Foreign key constraints are used to ensure data integrity at the database level, the index `uq_one_active_intervention_per_antenna` ensures that only one intervention can be active per antenna.
 - Prior to inserting a new intervention, the application checks if the antenna exists and if the intervention type is valid.
 - The application injects a `TransactionManager` that wraps the load, check, insert and status update operations in a single transaction.
-DB::transaction allows to have UniqueConstraintViolationException when the constraint is violated.
 
 ### Frontend
 

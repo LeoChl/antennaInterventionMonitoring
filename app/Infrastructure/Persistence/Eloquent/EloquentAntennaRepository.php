@@ -30,10 +30,7 @@ final class EloquentAntennaRepository implements AntennaRepository
             ->paginate($perPage, ['*'], 'page', $page);
 
         $consolidatedAntennas = $rawAntennas->getCollection()
-            ->map(fn (AntennaModel $antenna) => Antenna::fromArray(
-                $antenna->toArray(),
-                $antenna->latestIntervention?->toDomain(),
-            ))
+            ->map(fn (AntennaModel $antenna) => $antenna->toDomain($antenna->latestIntervention?->toDomain()))
             ->all();
 
         $paginatedResult = new PaginatedResult($consolidatedAntennas, $rawAntennas->total(), $page, $perPage);
@@ -49,7 +46,7 @@ final class EloquentAntennaRepository implements AntennaRepository
             throw new AntennaNotFound;
         }
 
-        return Antenna::fromArray($antenna->toArray(), $antenna->activeIntervention?->toDomain());
+        return $antenna->toDomain($antenna->activeIntervention?->toDomain());
     }
 
     public function updateStatus(int $antennaId, AntennaStatus $status): void
