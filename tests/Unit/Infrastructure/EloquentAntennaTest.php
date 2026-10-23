@@ -36,7 +36,7 @@ class EloquentAntennaTest extends TestsTestCase
         AntennaModel::create(['name' => 'A1', 'city' => 'Paris', 'status' => 'UP']);
         AntennaModel::create(['name' => 'A2', 'city' => 'Paris', 'status' => 'DOWN']);
 
-        $antennas = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE)->items;
+        $antennas = $this->repository->searchAntennas(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE)->items;
 
         $this->assertSame(['A1', 'A2'], array_map(fn (Antenna $antenna) => $antenna->name, $antennas));
     }
@@ -47,7 +47,7 @@ class EloquentAntennaTest extends TestsTestCase
         AntennaModel::create(['name' => 'A1', 'city' => 'Paris', 'status' => 'UP']);
         AntennaModel::create(['name' => 'A2', 'city' => 'Paris', 'status' => 'DOWN']);
 
-        $antennas = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, null, AntennaStatus::UP)->items;
+        $antennas = $this->repository->searchAntennas(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, null, AntennaStatus::UP)->items;
 
         $this->assertCount(1, $antennas);
         [$antenna] = $antennas;
@@ -60,7 +60,7 @@ class EloquentAntennaTest extends TestsTestCase
     {
         AntennaModel::create(['name' => 'A1', 'city' => 'Paris', 'status' => 'UP']);
 
-        $result = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, 'Lyon')->items;
+        $result = $this->repository->searchAntennas(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, 'Lyon')->items;
 
         $this->assertCount(0, $result);
     }
@@ -71,7 +71,7 @@ class EloquentAntennaTest extends TestsTestCase
         AntennaModel::create(['name' => 'A1', 'city' => 'Paris', 'status' => 'UP']);
         AntennaModel::create(['name' => 'A2', 'city' => 'Paris', 'status' => 'DOWN']);
 
-        $antennas = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, null, AntennaStatus::DOWN)->items;
+        $antennas = $this->repository->searchAntennas(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, null, AntennaStatus::DOWN)->items;
 
         $this->assertCount(1, $antennas);
         [$antenna] = $antennas;
@@ -87,7 +87,7 @@ class EloquentAntennaTest extends TestsTestCase
         AntennaModel::create(['name' => 'A3', 'city' => 'Paris', 'status' => 'UP']);
         AntennaModel::create(['name' => 'A4', 'city' => 'Paris', 'status' => 'DOWN']);
 
-        $antennas = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, 'Paris', AntennaStatus::UP)->items;
+        $antennas = $this->repository->searchAntennas(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, 'Paris', AntennaStatus::UP)->items;
 
         $this->assertCount(1, $antennas);
 
@@ -104,7 +104,7 @@ class EloquentAntennaTest extends TestsTestCase
         AntennaModel::create(['name' => 'A2', 'city' => 'Paris', 'status' => 'UP']);
         AntennaModel::create(['name' => 'A3', 'city' => 'Paris', 'status' => 'DOWN']);
 
-        $antennas = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, 'Paris')->items;
+        $antennas = $this->repository->searchAntennas(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, 'Paris')->items;
 
         $this->assertSame(['A2', 'A3'], array_map(fn (Antenna $antenna) => $antenna->name, $antennas));
     }
@@ -117,7 +117,7 @@ class EloquentAntennaTest extends TestsTestCase
         AntennaModel::create(['name' => 'A3', 'city' => 'Paris', 'status' => 'UP']);
         AntennaModel::create(['name' => 'A4', 'city' => 'Paris', 'status' => 'DOWN']);
 
-        $antennas = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, 'Paris', AntennaStatus::DOWN)->items;
+        $antennas = $this->repository->searchAntennas(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE, 'Paris', AntennaStatus::DOWN)->items;
 
         $this->assertCount(1, $antennas);
 
@@ -135,7 +135,7 @@ class EloquentAntennaTest extends TestsTestCase
         $this->createIntervention($mockAntenna, 'Latest', '2026-03-01 10:00:00');
         $this->createIntervention($mockAntenna, 'Middle', '2026-02-01 10:00:00', '2026-02-02 10:00:00');
 
-        [$antenna] = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE)->items;
+        [$antenna] = $this->repository->searchAntennas(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE)->items;
 
         $this->assertSame('Latest', $antenna->latestIntervention->description);
     }
@@ -149,7 +149,7 @@ class EloquentAntennaTest extends TestsTestCase
         $this->createIntervention($firstMockAntenna, 'A1 latest', '2026-02-01 10:00:00');
         $this->createIntervention($secondMockAntenna, 'A2 only', '2026-03-01 10:00:00');
 
-        $result = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE)->items;
+        $result = $this->repository->searchAntennas(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE)->items;
 
         $this->assertSame(
             ['A1 latest', 'A2 only'],
@@ -162,7 +162,7 @@ class EloquentAntennaTest extends TestsTestCase
     {
         AntennaModel::create(['name' => 'A1', 'city' => 'Paris', 'status' => 'UP']);
 
-        [$antenna] = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE)->items;
+        [$antenna] = $this->repository->searchAntennas(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE)->items;
 
         $this->assertNull($antenna->latestIntervention);
     }
@@ -173,7 +173,7 @@ class EloquentAntennaTest extends TestsTestCase
         $mockAntenna = AntennaModel::create(['name' => 'A1', 'city' => 'Paris', 'status' => 'UP']);
         $this->createIntervention($mockAntenna, 'Finished', '2026-01-01 10:00:00', '2026-01-02 12:30:00');
 
-        [$antenna] = $this->repository->findPaginated(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE)->items;
+        [$antenna] = $this->repository->searchAntennas(self::DEFAULT_PAGE, self::DEFAULT_PER_PAGE)->items;
         $latestIntervention = $antenna->latestIntervention;
 
         $this->assertEquals(new \DateTimeImmutable('2026-01-02 12:30:00'), $latestIntervention->endedAt);

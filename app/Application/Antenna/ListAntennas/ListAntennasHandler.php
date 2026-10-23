@@ -15,6 +15,6 @@ final class ListAntennasHandler
 
     public function __invoke(ListAntennasQuery $query): PaginatedResult
     {
-        return $this->antennaRepository->findPaginated($query->page, $query->perPage, $query->city, $query->status);
+        return $this->antennaRepository->searchAntennas($query->page, $query->perPage, $query->city, $query->status);
     }
 }

@@ -27,7 +27,7 @@ final class EloquentAntennaRepository implements AntennaRepository
         );
     }
 
-    public function findPaginated(int $page, int $perPage, ?string $city = null, ?AntennaStatus $status = null): PaginatedResult
+    public function searchAntennas(int $page, int $perPage, ?string $city = null, ?AntennaStatus $status = null): PaginatedResult
     {
         $whereCondition = [];
 

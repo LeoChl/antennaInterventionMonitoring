@@ -32,7 +32,5 @@ final class EloquentInterventionRepository implements InterventionRepository
         return $intervention->id;
     }
 
-    public function closeIntervention(int $interventionId, string $technicianIdentity): void
-    {
-    }
+    public function closeIntervention(int $interventionId, string $technicianIdentity): void {}
 }
