@@ -13,7 +13,7 @@ Send the token configured in `API_TOKEN`:
 curl -H "Authorization: Bearer change-me" -H "Accept: application/json" ...
 ```
 
-# 1. List antennas (filters: city, status=UP|DOWN, page, per_page<=100)
+# 1. List antennas (filters: city (partial, case-insensitive), status=UP|DOWN, page, per_page<=100)
 curl -s "$BASE/antennas?city=Paris&status=DOWN&per_page=20&page=1" \
   -H "Authorization: Bearer $TOKEN" -H "Accept: application/json"
 

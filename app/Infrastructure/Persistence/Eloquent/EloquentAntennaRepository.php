@@ -14,18 +14,17 @@ final class EloquentAntennaRepository implements AntennaRepository
 {
     public function searchAntennas(int $page, int $perPage, ?string $city = null, ?AntennaStatus $status = null): PaginatedResult
     {
-        $whereCondition = [];
+        $query = AntennaModel::with('latestIntervention');
 
         if ($status) {
-            $whereCondition['status'] = $status->value;
+            $query->where('status', $status->value);
         }
 
         if ($city) {
-            $whereCondition['city'] = $city;
+            $query->whereLike('city', "%{$city}%");
         }
 
-        $rawAntennas = AntennaModel::with('latestIntervention')
-            ->where($whereCondition)
+        $rawAntennas = $query
             ->orderBy('id')
             ->paginate($perPage, ['*'], 'page', $page);
 
