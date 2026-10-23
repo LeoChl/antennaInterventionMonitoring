@@ -23,13 +23,13 @@ It gives a flexible boilerplate to extend the project with tools like Vite for f
 As the project is supposed to handle more than 100 000 antennas and interventions, I chose to follow a clean architecture approach.
 With this amount of antennas, there could be various types of antennas and type of interventions needed. Clean architecture allows for better separation of concerns and easier testing.
 
-#### Atomicity
+#### Atomicity and concurrency
 
 To guarantee atomicity, multiple verification steps are made at different layers.
-- Foreign key constraints are used to ensure data integrity at the database level.
+- Foreign key constraints are used to ensure data integrity at the database level, the index `uq_one_active_intervention_per_antenna` ensures that only one intervention can be active per antenna.
 - Prior to inserting a new intervention, the application checks if the antenna exists and if the intervention type is valid.
 - The application injects a `TransactionManager` that wraps the load, check, insert and status update operations in a single transaction.
-
+DB::transaction allows to have UniqueConstraintViolationException when the constraint is violated.
 
 ### Frontend
 
@@ -60,7 +60,7 @@ On first start the containers will install Composer dependencies, create `.env` 
 - API: http://localhost:8080/api
 - OpenAPI UI: http://localhost:8080/docs/api
 
-### migrations
+### Migrations
 
 To create the tables using migrations, run:
 
@@ -74,14 +74,16 @@ To seed the database with mock antennas mock data, run:
 
 ```bash
 make seed
+
 ```
+### Testing
 
-## Authentication
-
-Write routes use `Route::middleware('api.token')`.
-Change `API_TOKEN` in `.env`.
-Send the token configured in `API_TOKEN`:
+To run the tests, run:
 
 ```bash
-curl -H "Authorization: Bearer change-me" -H "Accept: application/json" ...
+make test
 ```
+
+### Endpoints doc
+
+See [ENDPOINTS.md](ENDPOINTS.md)

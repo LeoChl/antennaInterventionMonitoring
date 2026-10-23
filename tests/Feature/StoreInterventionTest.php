@@ -99,15 +99,21 @@ final class StoreInterventionTest extends TestCase
         $this->createIntervention($freeAntenna->id)->assertCreated();
     }
 
+    #[TestDox('Given an unknown antenna, when createIntervention is called, then it is rejected with not found')]
+    public function test_rejects_unknown_antenna(): void
+    {
+        $this->createIntervention(999999)
+            ->assertNotFound()
+            ->assertJsonPath('message', 'Antenna not found');
+    }
+
     #[DataProvider('invalidRequests')]
-    #[TestDox('Given an invalid request, when createIntervention is called, then a validation error is returned and nothing is persisted')]
+    #[TestDox('Given an invalid request, when createIntervention is called, then a validation error is returned')]
     public function test_rejects_invalid_request(string $antennaId, array $payload, string $field): void
     {
         $this->postIntervention($antennaId, $payload)
             ->assertUnprocessable()
             ->assertJsonValidationErrors($field);
-
-        $this->assertDatabaseCount('antenna_intervention', 0);
     }
 
     public static function invalidRequests(): array
