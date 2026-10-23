@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Domain\Intervention\Exception\AntennaAlreadyHasActiveIntervention;
 use App\Domain\Intervention\Exception\InterventionAlreadyClosed;
+use App\Domain\Intervention\Exception\InterventionEndedBeforeStart;
 use App\Domain\Shared\EntityNotFound;
 use App\Http\Middleware\EnsureApiTokenIsValid;
 use Illuminate\Foundation\Application;
@@ -29,4 +30,5 @@ return Application::configure(basePath: dirname(__DIR__))
         );
         $exceptions->render(fn (EntityNotFound $e) => response()->json(['message' => $e->getMessage()], 404));
         $exceptions->render(fn (AntennaAlreadyHasActiveIntervention|InterventionAlreadyClosed $e) => response()->json(['message' => $e->getMessage()], 409));
+        $exceptions->render(fn (InterventionEndedBeforeStart $e) => response()->json(['message' => $e->getMessage()], 422));
     })->create();

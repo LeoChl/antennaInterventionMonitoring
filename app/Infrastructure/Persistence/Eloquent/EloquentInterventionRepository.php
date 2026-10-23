@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence\Eloquent;
 
 use App\Domain\Intervention\Exception\AntennaAlreadyHasActiveIntervention;
+use App\Domain\Intervention\Exception\InterventionAlreadyClosed;
+use App\Domain\Intervention\Exception\InterventionNotFound;
+use App\Domain\Intervention\Intervention;
 use App\Domain\Intervention\InterventionPriority;
 use App\Domain\Intervention\InterventionRepository;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -32,5 +35,23 @@ final class EloquentInterventionRepository implements InterventionRepository
         return $intervention->id;
     }
 
-    public function closeIntervention(int $interventionId, string $technicianIdentity): void {}
+    public function findInterventionById(int $interventionId): Intervention
+    {
+        return (InterventionModel::find($interventionId) ?? throw new InterventionNotFound)->toDomain();
+    }
+
+    public function closeIntervention(int $interventionId, string $technicianIdentity, string $description, \DateTimeImmutable $endedAt): void
+    {
+        $closedRows = InterventionModel::whereKey($interventionId)
+            ->whereNull('ended_at')
+            ->update([
+                'ended_at' => $endedAt,
+                'technician_identity' => $technicianIdentity,
+                'description' => $description,
+            ]);
+
+        if ($closedRows === 0) {
+            throw new InterventionAlreadyClosed;
+        }
+    }
 }

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Intervention\Exception;
 
-final class InterventionNotFound extends \DomainException
+use App\Domain\Shared\EntityNotFound;
+
+final class InterventionNotFound extends EntityNotFound
 {
     public function __construct()
     {
-        parent::__construct('Intervention not found');
+        parent::__construct('Intervention');
     }
 }

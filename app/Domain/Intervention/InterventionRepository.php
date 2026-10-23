@@ -8,5 +8,7 @@ interface InterventionRepository
 {
     public function createIntervention(int $antennaId, string $description, string $technicianIdentity, InterventionPriority $priority): int;
 
-    public function closeIntervention(int $interventionId, string $technicianIdentity): void;
+    public function findInterventionById(int $interventionId): Intervention;
+
+    public function closeIntervention(int $interventionId, string $technicianIdentity, string $description, \DateTimeImmutable $endedAt): void;
 }

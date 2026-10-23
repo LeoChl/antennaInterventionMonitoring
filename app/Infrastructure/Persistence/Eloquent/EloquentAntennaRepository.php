@@ -8,25 +8,10 @@ use App\Domain\Antenna\Antenna;
 use App\Domain\Antenna\AntennaRepository;
 use App\Domain\Antenna\AntennaStatus;
 use App\Domain\Antenna\Exception\AntennaNotFound;
-use App\Domain\Intervention\Intervention;
-use App\Domain\Intervention\InterventionPriority;
 use App\Domain\Shared\PaginatedResult;
 
 final class EloquentAntennaRepository implements AntennaRepository
 {
-    private function toIntervention(InterventionModel $model): Intervention
-    {
-        return new Intervention(
-            $model->id,
-            $model->antenna_id,
-            $model->description,
-            $model->technician_identity,
-            InterventionPriority::from($model->priority),
-            \DateTimeImmutable::createFromInterface($model->created_at),
-            $model->ended_at ? \DateTimeImmutable::createFromInterface($model->ended_at) : null,
-        );
-    }
-
     public function searchAntennas(int $page, int $perPage, ?string $city = null, ?AntennaStatus $status = null): PaginatedResult
     {
         $whereCondition = [];
@@ -47,7 +32,7 @@ final class EloquentAntennaRepository implements AntennaRepository
         $consolidatedAntennas = $rawAntennas->getCollection()
             ->map(fn (AntennaModel $antenna) => Antenna::fromArray(
                 $antenna->toArray(),
-                $antenna->latestIntervention ? $this->toIntervention($antenna->latestIntervention) : null,
+                $antenna->latestIntervention?->toDomain(),
             ))
             ->all();
 
@@ -64,9 +49,7 @@ final class EloquentAntennaRepository implements AntennaRepository
             throw new AntennaNotFound;
         }
 
-        $intervention = $antenna->activeIntervention ? $this->toIntervention($antenna->activeIntervention) : null;
-
-        return Antenna::fromArray($antenna->toArray(), $intervention);
+        return Antenna::fromArray($antenna->toArray(), $antenna->activeIntervention?->toDomain());
     }
 
     public function updateStatus(int $antennaId, AntennaStatus $status): void
