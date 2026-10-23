@@ -8,6 +8,7 @@ use App\Domain\Intervention\InterventionPriority;
 use App\Infrastructure\Persistence\Eloquent\AntennaModel;
 use App\Infrastructure\Persistence\Eloquent\InterventionModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
@@ -159,7 +160,7 @@ final class ListAntennasTest extends TestCase
         ];
     }
 
-    private function authenticatedGet(string $url): \Illuminate\Testing\TestResponse
+    private function authenticatedGet(string $url): TestResponse
     {
         return $this->getJson($url, ['Authorization' => 'Bearer '.self::TOKEN]);
     }

@@ -6,5 +6,5 @@ namespace App\Domain\Shared;
 
 interface TransactionManager
 {
-    public function run(callable $callback): void;
+    public function run(callable $callback): mixed;
 }

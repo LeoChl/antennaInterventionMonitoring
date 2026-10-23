@@ -17,6 +17,16 @@ final class Antenna
         public readonly ?Intervention $latestIntervention = null,
     ) {}
 
+    public function hasActiveIntervention(): bool
+    {
+        return $this->latestIntervention?->isInterventionOngoing() ?? false;
+    }
+
+    public function withStatus(AntennaStatus $status): self
+    {
+        return new self($this->id, $this->name, $this->city, $status, $this->createdAt, $this->latestIntervention);
+    }
+
     public function toArray(): array
     {
         return [

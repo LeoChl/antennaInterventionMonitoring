@@ -29,4 +29,9 @@ class AntennaModel extends Model
     {
         return $this->hasOne(InterventionModel::class, 'antenna_id')->latestOfMany('created_at');
     }
+
+    public function activeIntervention(): HasOne
+    {
+        return $this->hasOne(InterventionModel::class, 'antenna_id')->whereNull('ended_at');
+    }
 }

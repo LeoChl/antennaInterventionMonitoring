@@ -7,12 +7,26 @@ namespace App\Infrastructure\Persistence\Eloquent;
 use App\Domain\Antenna\Antenna;
 use App\Domain\Antenna\AntennaRepository;
 use App\Domain\Antenna\AntennaStatus;
+use App\Domain\Antenna\Exception\AntennaNotFound;
 use App\Domain\Intervention\Intervention;
 use App\Domain\Intervention\InterventionPriority;
 use App\Domain\Shared\PaginatedResult;
 
 final class EloquentAntennaRepository implements AntennaRepository
 {
+    private function toIntervention(InterventionModel $model): Intervention
+    {
+        return new Intervention(
+            $model->id,
+            $model->antenna_id,
+            $model->description,
+            $model->technician_identity,
+            InterventionPriority::from($model->priority),
+            \DateTimeImmutable::createFromInterface($model->created_at),
+            $model->ended_at ? \DateTimeImmutable::createFromInterface($model->ended_at) : null,
+        );
+    }
+
     public function findPaginated(int $page, int $perPage, ?string $city = null, ?AntennaStatus $status = null): PaginatedResult
     {
         $whereCondition = [];
@@ -42,16 +56,21 @@ final class EloquentAntennaRepository implements AntennaRepository
         return $paginatedResult;
     }
 
-    private function toIntervention(InterventionModel $model): Intervention
+    public function findAntennaById(int $antennaId): Antenna
     {
-        return new Intervention(
-            $model->id,
-            $model->antenna_id,
-            $model->description,
-            $model->technician_identity,
-            InterventionPriority::from($model->priority),
-            \DateTimeImmutable::createFromInterface($model->created_at),
-            $model->ended_at ? \DateTimeImmutable::createFromInterface($model->ended_at) : null,
-        );
+        $antenna = AntennaModel::with('activeIntervention')->find($antennaId);
+
+        if ($antenna === null) {
+            throw new AntennaNotFound;
+        }
+
+        $intervention = $antenna->activeIntervention ? $this->toIntervention($antenna->activeIntervention) : null;
+
+        return Antenna::fromArray($antenna->toArray(), $intervention);
+    }
+
+    public function updateStatus(int $antennaId, AntennaStatus $status): void
+    {
+        AntennaModel::whereKey($antennaId)->update(['status' => $status->value]);
     }
 }

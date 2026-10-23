@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\DB;
 
 final class LaravelTransactionManager implements TransactionManager
 {
-    public function run(callable $callback): void
+    public function run(callable $callback): mixed
     {
-        DB::transaction($callback);
+        return DB::transaction($callback);
     }
 }

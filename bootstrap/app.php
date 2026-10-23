@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Domain\Intervention\Exception\AntennaAlreadyHasActiveIntervention;
+use App\Domain\Intervention\Exception\InterventionAlreadyClosed;
+use App\Domain\Shared\EntityNotFound;
 use App\Http\Middleware\EnsureApiTokenIsValid;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,4 +27,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+        $exceptions->render(fn (EntityNotFound $e) => response()->json(['message' => $e->getMessage()], 404));
+        $exceptions->render(fn (AntennaAlreadyHasActiveIntervention|InterventionAlreadyClosed $e) => response()->json(['message' => $e->getMessage()], 409));
     })->create();

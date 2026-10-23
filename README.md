@@ -18,6 +18,19 @@ The application is containerized using Docker Compose. The architecture is as fo
 I decided to use Laravel as backend framework. It's a mature and robust framework suited for scaffolding APIs and handling database operations efficiently.
 It gives a flexible boilerplate to extend the project with tools like Vite for frontend asset management.
 
+#### Clean architecture
+
+As the project is supposed to handle more than 100 000 antennas and interventions, I chose to follow a clean architecture approach.
+With this amount of antennas, there could be various types of antennas and type of interventions needed. Clean architecture allows for better separation of concerns and easier testing.
+
+#### Atomicity
+
+To guarantee atomicity, multiple verification steps are made at different layers.
+- Foreign key constraints are used to ensure data integrity at the database level.
+- Prior to inserting a new intervention, the application checks if the antenna exists and if the intervention type is valid.
+- The application injects a `TransactionManager` that wraps the load, check, insert and status update operations in a single transaction.
+
+
 ### Frontend
 
 Vite is used for building the frontend assets. It's amongst the most popular frontend build tools and the vite ecosystem is very powerful.
@@ -57,7 +70,7 @@ make migrate
 
 ### Seeding
 
-To seed the database with mock data, run:
+To seed the database with mock antennas mock data, run:
 
 ```bash
 make seed
