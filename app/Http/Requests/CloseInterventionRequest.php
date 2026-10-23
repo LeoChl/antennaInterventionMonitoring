@@ -15,7 +15,7 @@ final class CloseInterventionRequest extends FormRequest
             'intervention_id' => ['required', 'integer', 'min:1', 'max:2147483647'],
             'description' => ['required', 'string', 'max:255'],
             'technician_identity' => ['required', 'string', 'max:255'],
-            'end_date' => ['nullable', 'date', 'before_or_equal:now'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:now'],
         ];
     }
 

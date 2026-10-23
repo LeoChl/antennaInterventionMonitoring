@@ -48,18 +48,18 @@ final class CloseInterventionTest extends TestCase
     {
         $intervention = $this->insertIntervention($this->createAntenna('DOWN'));
 
-        $this->closeIntervention((string) $intervention->id, self::validPayload() + ['end_date' => '2026-01-03T10:00:00+00:00'])->assertOk();
+        $this->closeIntervention((string) $intervention->id, self::validPayload() + ['end_date' => '2999-01-03T10:00:00+00:00'])->assertOk();
 
-        $this->assertSame('2026-01-03 10:00:00', InterventionModel::find($intervention->id)->ended_at->utc()->format('Y-m-d H:i:s'));
+        $this->assertSame('2999-01-03 10:00:00', InterventionModel::find($intervention->id)->ended_at->utc()->format('Y-m-d H:i:s'));
     }
 
     #[TestDox('Given an end_date before the intervention started, when closeIntervention is called, then it is rejected and nothing changes')]
     public function test_rejects_end_date_before_intervention_start(): void
     {
         $antenna = $this->createAntenna('DOWN');
-        $intervention = $this->insertIntervention($antenna, '2026-01-02 10:00:00');
+        $intervention = $this->insertIntervention($antenna, '2999-01-02 10:00:00');
 
-        $this->closeIntervention((string) $intervention->id, self::validPayload() + ['end_date' => '2026-01-01T10:00:00+00:00'])
+        $this->closeIntervention((string) $intervention->id, self::validPayload() + ['end_date' => '2999-01-01T10:00:00+00:00'])
             ->assertUnprocessable()
             ->assertJsonPath('message', 'Intervention cannot end before it started');
 
@@ -131,7 +131,7 @@ final class CloseInterventionTest extends TestCase
             'description over 255 characters' => ['1', ['description' => str_repeat('a', 256)] + self::validPayload(), 'description'],
             'technician_identity over 255 characters' => ['1', ['technician_identity' => str_repeat('a', 256)] + self::validPayload(), 'technician_identity'],
             'invalid end_date' => ['1', ['end_date' => 'not-a-date'] + self::validPayload(), 'end_date'],
-            'future end_date' => ['1', ['end_date' => '2999-01-01T00:00:00+00:00'] + self::validPayload(), 'end_date'],
+            'past end_date' => ['1', ['end_date' => '2000-01-01T00:00:00+00:00'] + self::validPayload(), 'end_date'],
             'non-numeric intervention id' => ['abc', self::validPayload(), 'intervention_id'],
             'zero intervention id' => ['0', self::validPayload(), 'intervention_id'],
             'intervention id above integer max' => ['2147483648', self::validPayload(), 'intervention_id'],
